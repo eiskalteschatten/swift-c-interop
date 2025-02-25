@@ -10,6 +10,7 @@ import SwiftUI
 struct ContentView: View {
     @State private var name: String = ""
     @State private var greeting: String = ""
+    @State private var showAlert = false
     
     var body: some View {
         VStack {
@@ -20,16 +21,23 @@ struct ContentView: View {
             Button(action: submit) {
                 Text("Submit")
             }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text(greeting),
+                    message: Text("This is a message from C."),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
         }
         .padding()
     }
     
-    func submit() {
+    private func submit() {
         name.withCString { cName in
             let mutableCString = UnsafeMutablePointer(mutating: cName)
             let result = append_name(mutableCString)
             greeting = String(cString: result!)
-            print("Result: \(greeting)")
+            showAlert = true
         }
     }
 }
